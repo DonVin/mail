@@ -1,0 +1,32 @@
+
+.login-wrapper {
+	padding-top: 50px;
+	margin: 0 auto;
+	margin: 50px auto;
+	min-width: 400px;
+	max-width: 600px;
+}
+
+.buttons {
+	text-align: right;
+	margin: 10px 0 50px 0;
+}
+
+.search-wrapper {
+	/* padding-top: 50px; */
+}
+
+.search-input {
+	margin: 0 auto;
+	min-width: 400px;
+	max-width: 600px;
+}
+
+.dragger-box {
+	margin: 20px auto;
+	width: 80%;
+}
+
+.search-list {
+	margin: 50px 10px;
+}
