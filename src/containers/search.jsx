@@ -133,35 +133,24 @@ export default class Search extends React.Component {
 
 	customRequest = (option)=> {
 		const formData = new FormData();
-		// const fileUrl = 'https://127.0.0.1:3000/upload';
-		formData.append('file',option.file);
+		formData.append('file', option.file);
 
 		API.upload({
-			// data: formData,
-			data:{file:'mails.zip'},
+			data: {
+				file: formData
+			},
 			headers: {
 				Authorization: `Bearer ${storage.get('TOKEN')}`,
 				'Content-Type': 'multipart/form-data',
 			}
 		}).then((res) => {
-			let fileInfo = JSON.parse(res.responseText);
-			if(res){
-				this.setState({
-					fileInfo:fileInfo,
-					loading: false,
-					uploading: false,
-					defaultFile:false
-				})
-			}
+			message.success(res.message)
 		}).catch(err => message.error(err.message || 'Failed'))
 		
 		
 	   }
 	
 	render() {
-		// const fd = new window.FormData();
-		// fd.append('token', token);
-		// fd.append('file', this.file);
 		const props = {
 			name: 'file',
 			multiple: true,
@@ -177,7 +166,6 @@ export default class Search extends React.Component {
 				};
 			},
 			customRequest: this.customRequest,
-			// action: 'https://127.0.0.1:3000/upload',
 			beforeUpload(info) {
 				console.warn('beforeUpload', info);
 			},
