@@ -49,11 +49,7 @@ class API extends Request {
 	async upload(params = {}) {
 		try {
 			let result = await this.axios('/upload', params);
-			if (result?.message) {
-				throw result.message;
-			} else {
-				return result;
-			}
+			return result;
 		} catch (err) {
 			throw err;
 		}

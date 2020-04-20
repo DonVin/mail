@@ -139,16 +139,12 @@ export default class Search extends React.Component {
 		formData.append('file', option.file);
 
 		API.upload({
-			data: {
-				file: formData
-			},
+			data: formData,
 			headers: {
 				Authorization: `Bearer ${storage.get('TOKEN')}`,
 				'Content-Type': 'multipart/form-data',
 			}
-		}).then((res) => {
-			message.success(res.message)
-		}).catch(err => message.error(err.message || 'Failed'))
+		}).then((res) => message.success(res.message)).catch(err => message.error(err.message || 'Failed'))
 	}
 	
 	render() {
@@ -158,13 +154,6 @@ export default class Search extends React.Component {
 			headers: {
 				Authorization: `Bearer ${storage.get('TOKEN')}`,
 				'Content-Type': 'multipart/form-data',
-			},
-			data: file => {
-				const fd = new window.FormData();
-				fd.append('file', file);
-				return {
-					file: fd
-				};
 			},
 			customRequest: this.customRequest,
 		};
