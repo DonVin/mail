@@ -27,7 +27,8 @@ export default class Enter extends React.Component {
 		}).then((res) => {
 			console.warn('res',res);
 			if(res.token) {
-				storage.set('TOKEN', res.token)
+				storage.set('TOKEN', res.token);
+				storage.set('MANAGER', res.manager);
 				window.location.href= '/search';
 			}
 		}).catch(err => message.error(err.message))

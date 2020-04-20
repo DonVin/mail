@@ -24,6 +24,7 @@ export default class Search extends React.Component {
 		hasMore: true,
 		modalVisible: false,
 		searchValue: '',
+		manager: false,
 		curItem: {}
 	};
 
@@ -34,6 +35,8 @@ export default class Search extends React.Component {
 		if(!storage.get('TOKEN')) {
 			window.location.href= '/enter';
 		}
+		
+		this.setState({manager: storage.get('MANAGER')});
 	}
 
 	// 邮件搜索
@@ -56,7 +59,7 @@ export default class Search extends React.Component {
 
 	// 退出登录
 	onClickLogout = () => {
-		storage.remove('TOKEN');
+		storage.clear();
 		window.location.href= '/enter';
 	}
 
@@ -146,9 +149,7 @@ export default class Search extends React.Component {
 		}).then((res) => {
 			message.success(res.message)
 		}).catch(err => message.error(err.message || 'Failed'))
-		
-		
-	   }
+	}
 	
 	render() {
 		const props = {
@@ -166,24 +167,9 @@ export default class Search extends React.Component {
 				};
 			},
 			customRequest: this.customRequest,
-			beforeUpload(info) {
-				console.warn('beforeUpload', info);
-			},
-			// onChange(info) {
-			// 	console.warn('info', info);
-			// 	const { status } = info.file;
-			// 	if (status !== 'uploading') {
-			// 		console.log(info.file, info.fileList);
-			// 	}
-			// 	if (status === 'done') {
-			// 		message.success(`${info.file.name} file uploaded successfully.`);
-			// 	} else if (status === 'error') {
-			// 		message.error(`${info.file.name} file upload failed.`);
-			// 	}
-			// },
 		};
 
-		const { data } = this.state;
+		const { data, manager } = this.state;
 		const vlist = ({ height, isScrolling, onChildScroll, scrollTop, onRowsRendered, width }) => (
 		<VList
 			autoHeight
@@ -233,7 +219,9 @@ export default class Search extends React.Component {
 		return (
 			<div className="search-wrapper">
 				<div className="buttons">
-					<Button type="primary" onClick={this.onClickFlush}>Flush</Button>
+					{manager && (
+						<Button type="primary" onClick={this.onClickFlush}>Flush</Button>
+					)}
 					<Button style={{marginLeft: '10px', marginRight: '10px'}} onClick={this.onClickLogout}>Logout</Button>
 				</div>
 				<Input.Search
