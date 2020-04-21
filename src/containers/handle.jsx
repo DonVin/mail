@@ -1,25 +1,20 @@
 import React from 'react';
 import storage from '../common/utils/storage';
 import { List, message, Spin, Input, Upload, Button, Modal } from 'antd';
-// import InfiniteScroll from 'react-infinite-scroller';
-import API from '../common/api';
-
 import WindowScroller from 'react-virtualized/dist/commonjs/WindowScroller';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import VList from 'react-virtualized/dist/commonjs/List';
 import InfiniteLoader from 'react-virtualized/dist/commonjs/InfiniteLoader';
-
 import { InboxOutlined } from '@ant-design/icons';
+import API from '../common/api';
 
 const { Dragger } = Upload;
 
-// const fakeDataUrl = 'https://randomuser.me/api/?results=5&inc=name,gender,email,nat&noinfo';
-
-export default class Search extends React.Component {
+export default class Handle extends React.Component {
 	state = {
 		data: [],
 		skip: 0,
-		take: 5,
+		take: 10,
 		loading: false,
 		hasMore: true,
 		modalVisible: false,
@@ -75,8 +70,6 @@ export default class Search extends React.Component {
 				Authorization: `Bearer ${storage.get('TOKEN')}`
 			}
 		}).then((res) => {
-			console.warn('res',res);
-			// callback(res)
 			this.setState({
 				skip: skip + 1,
 				loading: false,
@@ -220,16 +213,20 @@ export default class Search extends React.Component {
 					size="large"
 					onSearch={searchValue => this.onClickSearch(searchValue)}
 				/>
-				<Dragger className="dragger-box" {...props}>
-					<p className="ant-upload-drag-icon">
-					<InboxOutlined />
-					</p>
-					<p className="ant-upload-text">Click or drag file to this area to upload</p>
-					<p className="ant-upload-hint">
-						Support for a single or bulk upload. Strictly prohibit from uploading company data or other
-						band files
-					</p>
-				</Dragger>
+				{
+					manager && (
+						<Dragger className="dragger-box" {...props}>
+							<p className="ant-upload-drag-icon">
+							<InboxOutlined />
+							</p>
+							<p className="ant-upload-text">Click or drag file to this area to upload</p>
+							<p className="ant-upload-hint">
+								Support for a single or bulk upload. Strictly prohibit from uploading company data or other
+								band files
+							</p>
+						</Dragger>
+					)
+				}
 				<div className="search-list">
 					<List>
 						{data.length > 0 && <WindowScroller>{infiniteLoader}</WindowScroller>}

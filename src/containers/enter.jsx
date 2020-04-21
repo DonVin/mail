@@ -21,15 +21,13 @@ export default class Enter extends React.Component {
 			data: {
 				username,
 				password
-				// username: "tm-de",
-				// password: "archiv14"
 			}
 		}).then((res) => {
 			console.warn('res',res);
 			if(res.token) {
 				storage.set('TOKEN', res.token);
 				storage.set('MANAGER', res.manager);
-				window.location.href= '/search';
+				window.location.href= '/handle';
 			}
 		}).catch(err => message.error(err.message))
 	};

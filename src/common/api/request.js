@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-let baseURL; 
-if(process.env.NODE_ENV === 'development'){
-	console.warn('process.env.NODE_ENV',process.env.NODE_ENV);
-  	baseURL = '//127.0.0.1';
-}else{
-  	baseURL = '//62.171.183.92:8000';
-}
+// let baseURL; 
+// if(process.env.NODE_ENV === 'development'){
+// 	console.warn('process.env.NODE_ENV',process.env.NODE_ENV);
+//   	baseURL = '//127.0.0.1';
+// }else{
+//   	baseURL = '//62.171.183.92:8000';
+// }
 
 export default class Request {
 	axios(url, params, method = 'post'){
@@ -19,7 +19,7 @@ export default class Request {
 			axios.request({
 				method,
 				url,
-				baseURL: baseURL,
+				// baseURL,
 				timeout: 30000,
 				data: null,
 				withCredentials: true, //是否携带cookies发起请求

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter,Route } from 'react-router-dom';
 import Enter from './containers/enter';
-import Search from './containers/search';
+import Handle from './containers/handle';
 
 import './App.css';
 
@@ -10,7 +10,7 @@ function App() {
     <div className="App">
 		 <BrowserRouter>
 		 	<Route path={`/enter`} component={Enter} />
-		 	<Route path={`/search`} component={Search} />
+		 	<Route path={`/handle`} component={Handle} />
 		 </BrowserRouter>
     </div>
   );
