@@ -26,7 +26,6 @@ export default class Handle extends React.Component {
 	loadedRowsMap = {};
 
 	componentDidMount() {
-		console.warn('token', storage.get('TOKEN'));
 		if(!storage.get('TOKEN')) {
 			window.location.href= '/enter';
 		}
@@ -61,7 +60,6 @@ export default class Handle extends React.Component {
 	fetchData = () => {
 		const { searchValue, skip, take, data, loading } = this.state;
 		if (loading) return;
-		console.warn('data', data.length);
 		this.setState({
 			loading: true,
 		});
@@ -119,7 +117,6 @@ export default class Handle extends React.Component {
 	};
 
 	showModal = curItem => {
-		console.warn('curItem',curItem);
 		this.setState({ curItem }, () => {
 			this.setState({
 				modalVisible: true,
