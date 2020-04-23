@@ -12,8 +12,14 @@
 	margin: 10px 0 50px 0;
 }
 
-.search-wrapper {
-	/* padding-top: 50px; */
+.flex-layout {
+	display: flex;
+}
+.flex-span {
+	width: 100px;
+}
+.flex-form {
+	flex: 1;
 }
 
 .search-input {

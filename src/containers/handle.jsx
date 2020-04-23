@@ -20,7 +20,7 @@ export default class Handle extends React.Component {
 		modalVisible: false,
 		searchValue: '',
 		manager: false,
-		curItem: {}
+		curItem: {},
 	};
 
 	loadedRowsMap = {};
@@ -58,8 +58,13 @@ export default class Handle extends React.Component {
 		window.location.href= '/enter';
 	}
 
-	fetchData = callback => {
-		const { searchValue, skip, take, data} = this.state
+	fetchData = () => {
+		const { searchValue, skip, take, data, loading } = this.state;
+		if (loading) return;
+		console.warn('data', data.length);
+		this.setState({
+			loading: true,
+		});
 		API.search({
 			data: {
 				skip,
@@ -70,30 +75,24 @@ export default class Handle extends React.Component {
 				Authorization: `Bearer ${storage.get('TOKEN')}`
 			}
 		}).then((res) => {
+			const mergeData = data.concat(res);
 			this.setState({
-				skip: skip + 1,
 				loading: false,
-				data: data.concat(res),
+				skip: mergeData.length,
+				data: mergeData,
 			});
-			if(res.length < take) {
-				message.warning('Infinite List loaded all');
-				this.setState({
-					hasMore: false,
-					loading: false,
-				});
-			}
+			
 		}).catch(err => message.error(err.message))
 	};
 
 	// 无限滚动加载
 	handleInfiniteOnLoad = ({ startIndex, stopIndex }) => {
-		this.setState({
-			loading: true,
-		});
 		for (let i = startIndex; i <= stopIndex; i++) {
 			this.loadedRowsMap[i] = 1;
 		}
-		this.fetchData();
+		if ((stopIndex - startIndex + 1) >= this.state.take) {
+			this.fetchData();
+		}
 	};
 
 	isRowLoaded = ({ index }) => !!this.loadedRowsMap[index];
@@ -102,12 +101,13 @@ export default class Handle extends React.Component {
 		const { data } = this.state;
 		const item = data[index];
 		return (
-			<List.Item key={item.id} onClick={item => this.showModal({name:item.name})}>
+			<List.Item key={item.id} onClick={() => this.showModal(item)}>
 				<List.Item.Meta
+					style={{marginLeft: '100px',textAlign: 'left'}}
 					title={<a href={`mailto:${item.name}`}>{item.name}</a>}
-					description={item.title}
+					description={<span >item.title</span>}
 				/>
-					<div>{item.created_at}</div>
+					<div style={{marginRight: '100px'}}>{item.created_at}</div>
 			</List.Item>
 		);
 	};
@@ -137,13 +137,16 @@ export default class Handle extends React.Component {
 				Authorization: `Bearer ${storage.get('TOKEN')}`,
 				'Content-Type': 'multipart/form-data',
 			}
-		}).then((res) => message.success(res.message)).catch(err => message.error(err.message || 'Failed'))
+		}).then((res) => {
+			message.success(res.message);
+		}).catch(err => message.error(err.message || 'Failed'))
 	}
 	
 	render() {
 		const props = {
 			name: 'file',
 			multiple: true,
+			showUploadList: false,
 			headers: {
 				Authorization: `Bearer ${storage.get('TOKEN')}`,
 				'Content-Type': 'multipart/form-data',
@@ -153,33 +156,33 @@ export default class Handle extends React.Component {
 
 		const { data, manager } = this.state;
 		const vlist = ({ height, isScrolling, onChildScroll, scrollTop, onRowsRendered, width }) => (
-		<VList
-			autoHeight
-			height={height}
-			isScrolling={isScrolling}
-			onScroll={onChildScroll}
-			overscanRowCount={2}
-			rowCount={data.length}
-			rowHeight={73}
-			rowRenderer={this.renderItem}
-			onRowsRendered={onRowsRendered}
-			scrollTop={scrollTop}
-			width={width}
-		/>
+			<VList
+				autoHeight
+				height={height}
+				isScrolling={isScrolling}
+				onScroll={onChildScroll}
+				overscanRowCount={2}
+				rowCount={data.length}
+				rowHeight={73}
+				rowRenderer={this.renderItem}
+				onRowsRendered={onRowsRendered}
+				scrollTop={scrollTop}
+				width={width}
+			/>
 		);
 		const autoSize = ({ height, isScrolling, onChildScroll, scrollTop, onRowsRendered }) => (
-		<AutoSizer disableHeight>
-			{({ width }) =>
-			vlist({
-				height,
-				isScrolling,
-				onChildScroll,
-				scrollTop,
-				onRowsRendered,
-				width,
-			})
-			}
-		</AutoSizer>
+			<AutoSizer disableHeight>
+				{({ width }) =>
+					vlist({
+						height,
+						isScrolling,
+						onChildScroll,
+						scrollTop,
+						onRowsRendered,
+						width,
+					})
+				}
+			</AutoSizer>
 		);
 		const infiniteLoader = ({ height, isScrolling, onChildScroll, scrollTop }) => (
 			<InfiniteLoader
@@ -188,13 +191,13 @@ export default class Handle extends React.Component {
 				rowCount={data.length}
 			>
 				{({ onRowsRendered }) =>
-				autoSize({
-					height,
-					isScrolling,
-					onChildScroll,
-					scrollTop,
-					onRowsRendered,
-				})
+					autoSize({
+						height,
+						isScrolling,
+						onChildScroll,
+						scrollTop,
+						onRowsRendered,
+					})
 				}
 			</InfiniteLoader>
 		);
@@ -217,7 +220,7 @@ export default class Handle extends React.Component {
 					manager && (
 						<Dragger className="dragger-box" {...props}>
 							<p className="ant-upload-drag-icon">
-							<InboxOutlined />
+								<InboxOutlined />
 							</p>
 							<p className="ant-upload-text">Click or drag file to this area to upload</p>
 							<p className="ant-upload-hint">
@@ -238,6 +241,7 @@ export default class Handle extends React.Component {
 						title={`Von: ${this.state.curItem?.name}`}
 						visible={this.state.modalVisible}
 						onOk={this.handleOk}
+						onCancel={this.handleOk}
 					>
 						<p>{this.state.curItem?.content}</p>
 					</Modal>

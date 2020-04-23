@@ -4,8 +4,6 @@ import API from '../common/api';
 import storage from '../common/utils/storage';
 import './index.css'
 
-
-
 export default class Enter extends React.Component {
 	constructor(props) {
         super(props);
@@ -34,6 +32,11 @@ export default class Enter extends React.Component {
 
 	onValuesChange = e => this.setState(e);
 
+	onReset = () => this.setState({
+		username:'', 
+		password:''
+	});
+
 	render() {
 		return (
 			<div className="login-wrapper">
@@ -41,25 +44,30 @@ export default class Enter extends React.Component {
 					name="basic"
 					onValuesChange={this.onValuesChange}
 					>
-					<Form.Item
-						label="Username"
-						name="username"
-						rules={[{ required: true, message: 'Please input your username!' }]}
-					>
-						<Input />
-					</Form.Item>
-
-					<Form.Item
-						label="Password"
-						name="password"
-						rules={[{ required: true, message: 'Please input your password!' }]}
-					>
-						<Input.Password />
-					</Form.Item>
+					<div className="flex-layout">
+						<span className='flex-span'>Username: </span>
+						<Form.Item
+							className="flex-form"
+							name="username"
+							rules={[{ required: true, message: 'Please input your username!' }]}
+						>
+							<Input />
+						</Form.Item>
+					</div>
+					<div className="flex-layout">
+						<span className='flex-span'>Password: </span>
+						<Form.Item
+							className="flex-form"
+							name="password"
+							rules={[{ required: true, message: 'Please input your password!' }]}
+						>
+							<Input.Password />
+						</Form.Item>
+					</div>
 
 					<Form.Item>
-						<Button type="primary" htmlType="submit" onClick={this.toSearch} style={{marginRight: '10px'}}>Login</Button>
-						<Button type="primary" htmlType="submit">Reset</Button>
+						<Button type="primary" htmlType="submit" onClick={this.toSearch}>Login</Button>
+						{/* <Button type="primary" htmlType="submit" style={{marginLeft: '10px'}} onClick={this.onReset} >Reset</Button> */}
 					</Form.Item>
 					</Form>
 			</div>

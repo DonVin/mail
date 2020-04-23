@@ -19,10 +19,6 @@ export default class Request {
 			axios.request({
 				method,
 				url,
-				// baseURL,
-				timeout: 30000,
-				data: null,
-				withCredentials: true, //是否携带cookies发起请求
 				...params,
 				headers,
 			}).then(res => {
