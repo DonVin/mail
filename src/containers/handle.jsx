@@ -136,17 +136,23 @@ export default class Handle extends React.Component {
 			}
 		}).then((res) => {
 			message.success(res.message);
-		}).catch(err => message.error(err.message || 'Failed'))
+			option.onSuccess();
+		}).catch(err => {
+			message.error(err.message || 'Failed');
+			option.onError();
+		})
 	}
 	
 	render() {
 		const props = {
 			name: 'file',
 			multiple: true,
-			showUploadList: false,
 			headers: {
 				Authorization: `Bearer ${storage.get('TOKEN')}`,
 				'Content-Type': 'multipart/form-data',
+			},
+			onChange: (info) => {
+				console.warn('change' ,info);
 			},
 			customRequest: this.customRequest,
 		};
