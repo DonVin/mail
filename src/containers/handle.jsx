@@ -37,7 +37,7 @@ export default class Handle extends React.Component {
 	onClickSearch = searchValue => {
 		this.setState(
 			{ searchValue },
-			() => this.fetchData()
+			() => this.fetchData(true)
 		);
 		
 	}
@@ -57,12 +57,13 @@ export default class Handle extends React.Component {
 		window.location.href= '/enter';
 	}
 
-	fetchData = () => {
-		const { searchValue, skip, take, data, loading } = this.state;
+	fetchData = isFirst => {
+		let { searchValue, skip, take, data, loading } = this.state;
 		if (loading) return;
 		this.setState({
 			loading: true,
 		});
+		isFirst && (skip = 0);
 		API.search({
 			data: {
 				skip,
@@ -73,7 +74,7 @@ export default class Handle extends React.Component {
 				Authorization: `Bearer ${storage.get('TOKEN')}`
 			}
 		}).then((res) => {
-			const mergeData = data.concat(res);
+			const mergeData = isFirst ? res : data.concat(res);
 			this.setState({
 				loading: false,
 				skip: mergeData.length,
@@ -85,6 +86,7 @@ export default class Handle extends React.Component {
 
 	// 无限滚动加载
 	handleInfiniteOnLoad = ({ startIndex, stopIndex }) => {
+		console.warn('startIndex, stopIndex', startIndex, stopIndex);
 		for (let i = startIndex; i <= stopIndex; i++) {
 			this.loadedRowsMap[i] = 1;
 		}
@@ -99,13 +101,15 @@ export default class Handle extends React.Component {
 		const { data } = this.state;
 		const item = data[index];
 		return (
-			<List.Item key={item.id} onClick={() => this.showModal(item)}>
+			<List.Item key={index} onClick={() => this.showModal(item)} className="list-item">
 				<List.Item.Meta
-					style={{marginLeft: '100px',textAlign: 'left'}}
-					title={<a href={`mailto:${item.name}`}>{item.name}</a>}
-					description={<span >item.title</span>}
+					style={{marginLeft: '50px',textAlign: 'left'}}
+					title={<a href={`mailto:${item.from}`}>{item.from}</a>}
 				/>
-					<div style={{marginRight: '100px'}}>{item.created_at}</div>
+					<div className='list-content'>
+						<div style={{marginRight: '50px'}}>{item.title}</div>
+						<div>{item.created_at}</div>
+					</div>
 			</List.Item>
 		);
 	};
@@ -153,6 +157,16 @@ export default class Handle extends React.Component {
 			},
 			onChange: (info) => {
 				console.warn('change' ,info);
+			},
+			beforeUpload(file, fileList) {
+				console.log(file, fileList);
+				return new Promise((resolve, reject) => {
+					console.log('start check');
+					setTimeout(() => {
+						console.log('check finshed');
+						reject(file);
+					}, 3000);
+				});
 			},
 			customRequest: this.customRequest,
 		};
@@ -241,12 +255,14 @@ export default class Handle extends React.Component {
 				</div>
 				<div>
 					<Modal
-						title={`Von: ${this.state.curItem?.name}`}
+						title={this.state.curItem?.from}
 						visible={this.state.modalVisible}
-						onOk={this.handleOk}
 						onCancel={this.handleOk}
+						footer={null}
 					>
-						<p>{this.state.curItem?.content}</p>
+						<pre>{this.state.curItem?.title}</pre>
+						<pre>{this.state.curItem?.created_at}</pre>
+						<pre>{this.state.curItem?.content}</pre>
 					</Modal>
 				</div>
 			</div>

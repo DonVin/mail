@@ -36,3 +36,13 @@
 .search-list {
 	margin: 50px 10px;
 }
+
+.list-item:hover {
+	background: #F9F9F9;
+}
+
+.list-content {
+	display: flex;
+	flex: 2; 
+	justify-content: center;
+}

@@ -15,13 +15,13 @@ export default class Enter extends React.Component {
 	
 	toSearch = () => {
 		const {username, password} = this.state;
+		if(!username || !password) return message.error('Please input your username or password');
 		API.login({
 			data: {
 				username,
 				password
 			}
 		}).then((res) => {
-			console.warn('res',res);
 			if(res.token) {
 				storage.set('TOKEN', res.token);
 				storage.set('MANAGER', res.manager);
