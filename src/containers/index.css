@@ -68,3 +68,19 @@ pre {
 	white-space: -o-pre-wrap; /* Opera 7 */ 
 	word-wrap: break-word; /* Internet Explorer 5.5+ */ 
 }
+
+.file-item {
+	position: relative;
+	width: 100%;
+	text-align: center;
+	line-height: 30px;
+	border-bottom: 1px solid #F2F2F2;
+}
+.file-item-uploaded {
+	color: #46BD15;
+}
+.file-remove {
+	position: absolute;
+	right: 30px;
+	line-height: 30px;
+}

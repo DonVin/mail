@@ -2,7 +2,7 @@ import React from 'react';
 import storage from '../common/utils/storage';
 import { List, message, Spin, Input, Upload, Button, Modal, Tabs} from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
-import { InboxOutlined, FileSearchOutlined, CloudUploadOutlined  } from '@ant-design/icons';
+import { InboxOutlined, FileSearchOutlined, CloudUploadOutlined, DeleteOutlined  } from '@ant-design/icons';
 import API from '../common/api';
 const { Dragger } = Upload;
 
@@ -18,7 +18,8 @@ export default class Handle extends React.Component {
 		manager: false,
 		curItem: {},
 		fileList: [],
-		uploadLoading: false
+		uploadLoading: false,
+		hadUploaded: []
 	};
 
 	// loadedRowsMap = {};
@@ -150,7 +151,8 @@ export default class Handle extends React.Component {
 			message.success(res.message);
 			this.setState({
 				fileList: [],
-				uploadLoading: false
+				uploadLoading: false,
+				hadUploaded: fileList,
 			})
 		}).catch(err => {
 			message.error(err.message || 'Failed');
@@ -159,28 +161,30 @@ export default class Handle extends React.Component {
 			})
 		})
 	}
+
+	onRemoveFile = file => {
+		const fileList = this.state.fileList;
+		let index = -1;
+		fileList.forEach((e, i) => {
+			if(file.uid === e.uid) {
+				index = i;
+			}
+		})
+		index > -1 && fileList.splice(index, 1);
+		this.setState({
+			fileList
+		})
+		console.warn('after', fileList);
+	}
 	
 	render() {
 		const props = {
 			name: 'file',
 			multiple: true,
+			showUploadList: false,
 			headers: {
 				Authorization: `Bearer ${storage.get('TOKEN')}`,
 				'Content-Type': 'multipart/form-data',
-			},
-			onRemove: file => {
-				const fileList = this.state.fileList;
-				let index = -1;
-				fileList.forEach((e, i) => {
-					if(file.uid === e.uid) {
-						index = i;
-					}
-				})
-				index > -1 && fileList.splice(index, 1);
-				this.setState({
-					fileList
-				})
-				console.warn('after', fileList);
 			},
 			beforeUpload: (file) => {
 				this.setState({
@@ -190,7 +194,7 @@ export default class Handle extends React.Component {
 			},
 		};
 
-		const { manager, fileList, uploadLoading } = this.state;
+		const { manager, fileList, uploadLoading, hadUploaded } = this.state;
 
 		return (
 			<div className="search-wrapper">
@@ -274,6 +278,23 @@ export default class Handle extends React.Component {
 											band files
 										</p>
 									</Dragger>
+									<div className='file-list-wrapper'>
+										{
+											fileList.map(file => {
+												return (
+													<div className="file-item">
+														{file.name}
+														<DeleteOutlined onClick={() => this.onRemoveFile(file)} className="file-remove" />
+													</div>
+												)
+											})
+										}
+										{
+											hadUploaded.map(file => {
+												return <div className="file-item file-item-uploaded">{file.name}</div>
+											})
+										}
+									</div>
 									<Button loading={uploadLoading} style={{marginTop: '20px'}} disabled={!fileList.length} type="primary" onClick={this.uploadFile}>Click Upload</Button>
 								</div>
 							</Tabs.TabPane>
