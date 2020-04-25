@@ -1,8 +1,8 @@
 import React from 'react';
 import storage from '../common/utils/storage';
-import { List, message, Spin, Input, Upload, Button, Modal } from 'antd';
+import { List, message, Spin, Input, Upload, Button, Modal, Tabs} from 'antd';
 import InfiniteScroll from 'react-infinite-scroller';
-import { InboxOutlined } from '@ant-design/icons';
+import { InboxOutlined, FileSearchOutlined, CloudUploadOutlined  } from '@ant-design/icons';
 import API from '../common/api';
 const { Dragger } = Upload;
 
@@ -200,75 +200,98 @@ export default class Handle extends React.Component {
 					)}
 					<Button style={{marginLeft: '10px', marginRight: '10px'}} onClick={this.onClickLogout}>Logout</Button>
 				</div>
-				<Input.Search
-					className="search-input"
-					placeholder="input search"
-					enterButton="Search"
-					size="large"
-					onSearch={searchValue => this.onClickSearch(searchValue)}
-				/>
-				{
-					manager && (
-						<div>
-							<Dragger className="dragger-box" {...props}>
-								<p className="ant-upload-drag-icon">
-									<InboxOutlined />
-								</p>
-								<p className="ant-upload-text">Click or drag file to this area to upload</p>
-								<p className="ant-upload-hint">
-									Support for a single or bulk upload. Strictly prohibit from uploading company data or other
-									band files
-								</p>
-							</Dragger>
-							<Button loading={uploadLoading} style={{marginTop: '20px'}} disabled={!fileList.length} type="primary" onClick={this.uploadFile}>Click Upload</Button>
-						</div>
-					)
-				}
-				<div className="search-list">
-					<div className="list-infinite-container">
-						<InfiniteScroll
-							initialLoad={false}
-							pageStart={0}
-							loadMore={this.handleInfiniteOnLoad}
-							hasMore={!this.state.loading && this.state.hasMore}
-							useWindow={false}
-						>
-							<List
-								dataSource={this.state.data}
-								renderItem={(item,index) => (
-									<List.Item key={index} onClick={() => this.showModal(item)} className="list-item">
-										<List.Item.Meta
-											style={{textAlign: 'left'}}
-											title={<a href={`mailto:${item.from}`}>{item.from}</a>}
-										/>
-											<div className='list-content'>
-												<div style={{ flex: 1}}>{item.title}</div>
-												<div style={{width: '300px', textAlign: 'right'}}>{item.created_at}</div>
-											</div>
-									</List.Item>
-								)}
-							>
-								{this.state.loading && this.state.hasMore && (
-								<div className="list-loading-container">
-									<Spin />
-								</div>
-								)}
-							</List>
-						</InfiniteScroll>
-					</div>
-				</div>
-				<div>
-					<Modal
-						title={this.state.curItem?.from}
-						visible={this.state.modalVisible}
-						onCancel={this.handleOk}
-						footer={null}
+				<Tabs defaultActiveKey="2">
+					<Tabs.TabPane
+						tab={
+							<span>
+								<FileSearchOutlined />
+								Search
+							</span>
+						}
+						key="1"
 					>
-						<pre>{this.state.curItem?.title}</pre>
-						<pre>{this.state.curItem?.created_at}</pre>
-						<pre>{this.state.curItem?.content}</pre>
-					</Modal>
-				</div>
+						<Input.Search
+							className="search-input"
+							placeholder="input search"
+							enterButton="Search"
+							size="large"
+							onSearch={searchValue => this.onClickSearch(searchValue)}
+						/>
+						
+						<div className="search-list">
+							<div className="list-infinite-container">
+								<InfiniteScroll
+									initialLoad={false}
+									pageStart={0}
+									loadMore={this.handleInfiniteOnLoad}
+									hasMore={!this.state.loading && this.state.hasMore}
+									useWindow={false}
+								>
+									<List
+										dataSource={this.state.data}
+										renderItem={(item,index) => (
+											<List.Item key={index} onClick={() => this.showModal(item)} className="list-item">
+												<List.Item.Meta
+													style={{textAlign: 'left'}}
+													title={<a href={`mailto:${item.from}`}>{item.from}</a>}
+												/>
+													<div className='list-content'>
+														<div style={{ flex: 1}}>{item.title}</div>
+														<div style={{width: '300px', textAlign: 'right'}}>{item.created_at}</div>
+													</div>
+											</List.Item>
+										)}
+									>
+										{this.state.loading && this.state.hasMore && (
+										<div className="list-loading-container">
+											<Spin />
+										</div>
+										)}
+									</List>
+								</InfiniteScroll>
+							</div>
+						</div>
+					</Tabs.TabPane>
+					{
+						manager && (
+							<Tabs.TabPane
+								tab={
+									<span>
+										<CloudUploadOutlined />
+										Upload
+									</span>
+								}
+								key="2"
+							>
+								<div>
+									<Dragger className="dragger-box" {...props}>
+										<p className="ant-upload-drag-icon">
+											<InboxOutlined />
+										</p>
+										<p className="ant-upload-text">Click or drag file to this area to upload</p>
+										<p className="ant-upload-hint">
+											Support for a single or bulk upload. Strictly prohibit from uploading company data or other
+											band files
+										</p>
+									</Dragger>
+									<Button loading={uploadLoading} style={{marginTop: '20px'}} disabled={!fileList.length} type="primary" onClick={this.uploadFile}>Click Upload</Button>
+								</div>
+							</Tabs.TabPane>
+						)
+					}
+			</Tabs>
+			<div>
+				<Modal
+					title={this.state.curItem?.from}
+					visible={this.state.modalVisible}
+					onCancel={this.handleOk}
+					footer={null}
+				>
+					<pre>{this.state.curItem?.title}</pre>
+					<pre>{this.state.curItem?.created_at}</pre>
+					<pre>{this.state.curItem?.content}</pre>
+				</Modal>
+			</div>
 			</div>
 		);
 	}
