@@ -17,6 +17,8 @@ export default class Handle extends React.Component {
 		searchValue: '',
 		manager: false,
 		curItem: {},
+		fileList: [],
+		uploadLoading: false
 	};
 
 	// loadedRowsMap = {};
@@ -113,6 +115,7 @@ export default class Handle extends React.Component {
 	};
 
 	customRequest = (option)=> {
+		console.warn('option', option);
 		const formData = new FormData();
 		formData.append('file', option.file);
 
@@ -130,6 +133,32 @@ export default class Handle extends React.Component {
 			option.onError();
 		})
 	}
+
+	uploadFile = () => {
+		const { fileList } = this.state;
+		if (fileList.length > 1) return message.error('Only one file can be uploaded!');
+		const formData = new FormData();
+		formData.append('file', fileList[0]);
+		this.setState({ uploadLoading: true });
+		API.upload({
+			data: formData,
+			headers: {
+				Authorization: `Bearer ${storage.get('TOKEN')}`,
+				'Content-Type': 'multipart/form-data',
+			}
+		}).then((res) => {
+			message.success(res.message);
+			this.setState({
+				fileList: [],
+				uploadLoading: false
+			})
+		}).catch(err => {
+			message.error(err.message || 'Failed');
+			this.setState({
+				uploadLoading: false
+			})
+		})
+	}
 	
 	render() {
 		const props = {
@@ -139,23 +168,29 @@ export default class Handle extends React.Component {
 				Authorization: `Bearer ${storage.get('TOKEN')}`,
 				'Content-Type': 'multipart/form-data',
 			},
-			onChange: (info) => {
-				console.warn('change' ,info);
+			onRemove: file => {
+				const fileList = this.state.fileList;
+				let index = -1;
+				fileList.forEach((e, i) => {
+					if(file.uid === e.uid) {
+						index = i;
+					}
+				})
+				index > -1 && fileList.splice(index, 1);
+				this.setState({
+					fileList
+				})
+				console.warn('after', fileList);
 			},
-			beforeUpload(file, fileList) {
-				console.log(file, fileList);
-				return new Promise((resolve, reject) => {
-					console.log('start check');
-					setTimeout(() => {
-						console.log('check finshed');
-						reject(file);
-					}, 3000);
-				});
+			beforeUpload: (file) => {
+				this.setState({
+					fileList: [...this.state.fileList, file]
+				})
+				return false;
 			},
-			customRequest: this.customRequest,
 		};
 
-		const { manager } = this.state;
+		const { manager, fileList, uploadLoading } = this.state;
 
 		return (
 			<div className="search-wrapper">
@@ -174,16 +209,19 @@ export default class Handle extends React.Component {
 				/>
 				{
 					manager && (
-						<Dragger className="dragger-box" {...props}>
-							<p className="ant-upload-drag-icon">
-								<InboxOutlined />
-							</p>
-							<p className="ant-upload-text">Click or drag file to this area to upload</p>
-							<p className="ant-upload-hint">
-								Support for a single or bulk upload. Strictly prohibit from uploading company data or other
-								band files
-							</p>
-						</Dragger>
+						<div>
+							<Dragger className="dragger-box" {...props}>
+								<p className="ant-upload-drag-icon">
+									<InboxOutlined />
+								</p>
+								<p className="ant-upload-text">Click or drag file to this area to upload</p>
+								<p className="ant-upload-hint">
+									Support for a single or bulk upload. Strictly prohibit from uploading company data or other
+									band files
+								</p>
+							</Dragger>
+							<Button loading={uploadLoading} style={{marginTop: '20px'}} disabled={!fileList.length} type="primary" onClick={this.uploadFile}>Click Upload</Button>
+						</div>
 					)
 				}
 				<div className="search-list">
