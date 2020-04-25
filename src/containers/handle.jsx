@@ -1,13 +1,13 @@
 import React from 'react';
 import storage from '../common/utils/storage';
 import { List, message, Spin, Input, Upload, Button, Modal } from 'antd';
-import WindowScroller from 'react-virtualized/dist/commonjs/WindowScroller';
-import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
-import VList from 'react-virtualized/dist/commonjs/List';
-import InfiniteLoader from 'react-virtualized/dist/commonjs/InfiniteLoader';
+// import WindowScroller from 'react-virtualized/dist/commonjs/WindowScroller';
+// import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
+// import VList from 'react-virtualized/dist/commonjs/List';
+// import InfiniteLoader from 'react-virtualized/dist/commonjs/InfiniteLoader';
+import InfiniteScroll from 'react-infinite-scroller';
 import { InboxOutlined } from '@ant-design/icons';
 import API from '../common/api';
-
 const { Dragger } = Upload;
 
 export default class Handle extends React.Component {
@@ -23,7 +23,7 @@ export default class Handle extends React.Component {
 		curItem: {},
 	};
 
-	loadedRowsMap = {};
+	// loadedRowsMap = {};
 
 	componentDidMount() {
 		if(!storage.get('TOKEN')) {
@@ -74,6 +74,11 @@ export default class Handle extends React.Component {
 				Authorization: `Bearer ${storage.get('TOKEN')}`
 			}
 		}).then((res) => {
+			if (res.length < take) {
+				this.setState({
+					hasMore: false,
+				});
+			}
 			const mergeData = isFirst ? res : data.concat(res);
 			this.setState({
 				loading: false,
@@ -95,24 +100,26 @@ export default class Handle extends React.Component {
 		}
 	};
 
-	isRowLoaded = ({ index }) => !!this.loadedRowsMap[index];
+	handleInfiniteOnLoad = () => this.fetchData();
 
-	renderItem = ({ index, key, style }) => {
-		const { data } = this.state;
-		const item = data[index];
-		return (
-			<List.Item key={index} onClick={() => this.showModal(item)} className="list-item">
-				<List.Item.Meta
-					style={{marginLeft: '50px',textAlign: 'left'}}
-					title={<a href={`mailto:${item.from}`}>{item.from}</a>}
-				/>
-					<div className='list-content'>
-						<div style={{marginRight: '50px'}}>{item.title}</div>
-						<div>{item.created_at}</div>
-					</div>
-			</List.Item>
-		);
-	};
+	// isRowLoaded = ({ index }) => !!this.loadedRowsMap[index];
+
+	// renderItem = ({ index, key, style }) => {
+	// 	const { data } = this.state;
+	// 	const item = data[index];
+	// 	return (
+	// 		<List.Item key={index} onClick={() => this.showModal(item)} className="list-item">
+	// 			<List.Item.Meta
+	// 				style={{marginLeft: '50px',textAlign: 'left'}}
+	// 				title={<a href={`mailto:${item.from}`}>{item.from}</a>}
+	// 			/>
+	// 				<div className='list-content'>
+	// 					<div style={{marginRight: '50px'}}>{item.title}</div>
+	// 					<div>{item.created_at}</div>
+	// 				</div>
+	// 		</List.Item>
+	// 	);
+	// };
 
 	handleOk = e => {
 		this.setState({
@@ -172,52 +179,52 @@ export default class Handle extends React.Component {
 		};
 
 		const { data, manager } = this.state;
-		const vlist = ({ height, isScrolling, onChildScroll, scrollTop, onRowsRendered, width }) => (
-			<VList
-				autoHeight
-				height={height}
-				isScrolling={isScrolling}
-				onScroll={onChildScroll}
-				overscanRowCount={2}
-				rowCount={data.length}
-				rowHeight={73}
-				rowRenderer={this.renderItem}
-				onRowsRendered={onRowsRendered}
-				scrollTop={scrollTop}
-				width={width}
-			/>
-		);
-		const autoSize = ({ height, isScrolling, onChildScroll, scrollTop, onRowsRendered }) => (
-			<AutoSizer disableHeight>
-				{({ width }) =>
-					vlist({
-						height,
-						isScrolling,
-						onChildScroll,
-						scrollTop,
-						onRowsRendered,
-						width,
-					})
-				}
-			</AutoSizer>
-		);
-		const infiniteLoader = ({ height, isScrolling, onChildScroll, scrollTop }) => (
-			<InfiniteLoader
-				isRowLoaded={this.isRowLoaded}
-				loadMoreRows={this.handleInfiniteOnLoad}
-				rowCount={data.length}
-			>
-				{({ onRowsRendered }) =>
-					autoSize({
-						height,
-						isScrolling,
-						onChildScroll,
-						scrollTop,
-						onRowsRendered,
-					})
-				}
-			</InfiniteLoader>
-		);
+		// const vlist = ({ height, isScrolling, onChildScroll, scrollTop, onRowsRendered, width }) => (
+		// 	<VList
+		// 		autoHeight
+		// 		height={height}
+		// 		isScrolling={isScrolling}
+		// 		onScroll={onChildScroll}
+		// 		overscanRowCount={2}
+		// 		rowCount={data.length}
+		// 		rowHeight={73}
+		// 		rowRenderer={this.renderItem}
+		// 		onRowsRendered={onRowsRendered}
+		// 		scrollTop={scrollTop}
+		// 		width={width}
+		// 	/>
+		// );
+		// const autoSize = ({ height, isScrolling, onChildScroll, scrollTop, onRowsRendered }) => (
+		// 	<AutoSizer disableHeight>
+		// 		{({ width }) =>
+		// 			vlist({
+		// 				height,
+		// 				isScrolling,
+		// 				onChildScroll,
+		// 				scrollTop,
+		// 				onRowsRendered,
+		// 				width,
+		// 			})
+		// 		}
+		// 	</AutoSizer>
+		// );
+		// const infiniteLoader = ({ height, isScrolling, onChildScroll, scrollTop }) => (
+		// 	<InfiniteLoader
+		// 		isRowLoaded={this.isRowLoaded}
+		// 		loadMoreRows={this.handleInfiniteOnLoad}
+		// 		rowCount={data.length}
+		// 	>
+		// 		{({ onRowsRendered }) =>
+		// 			autoSize({
+		// 				height,
+		// 				isScrolling,
+		// 				onChildScroll,
+		// 				scrollTop,
+		// 				onRowsRendered,
+		// 			})
+		// 		}
+		// 	</InfiniteLoader>
+		// );
 		return (
 			<div className="search-wrapper">
 				<div className="buttons">
@@ -248,10 +255,41 @@ export default class Handle extends React.Component {
 					)
 				}
 				<div className="search-list">
-					<List>
+					{/* <List>
 						{data.length > 0 && <WindowScroller>{infiniteLoader}</WindowScroller>}
 						{this.state.loading && <Spin className="demo-loading" />}
-					</List>
+					</List> */}
+					<div className="list-infinite-container">
+						<InfiniteScroll
+							initialLoad={false}
+							pageStart={0}
+							loadMore={this.handleInfiniteOnLoad}
+							hasMore={!this.state.loading && this.state.hasMore}
+							useWindow={false}
+						>
+							<List
+								dataSource={this.state.data}
+								renderItem={(item,index) => (
+									<List.Item key={index} onClick={() => this.showModal(item)} className="list-item">
+										<List.Item.Meta
+											style={{textAlign: 'left'}}
+											title={<a href={`mailto:${item.from}`}>{item.from}</a>}
+										/>
+											<div className='list-content'>
+												<div style={{ flex: 1}}>{item.title}</div>
+												<div style={{width: '300px', textAlign: 'right'}}>{item.created_at}</div>
+											</div>
+									</List.Item>
+								)}
+							>
+								{this.state.loading && this.state.hasMore && (
+								<div className="list-loading-container">
+									<Spin />
+								</div>
+								)}
+							</List>
+						</InfiniteScroll>
+					</div>
 				</div>
 				<div>
 					<Modal
