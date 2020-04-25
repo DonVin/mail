@@ -236,8 +236,8 @@ export default class Handle extends React.Component {
 													title={<a href={`mailto:${item.from}`}>{item.from}</a>}
 												/>
 													<div className='list-content'>
-														<div style={{ flex: 1}}>{item.title}</div>
-														<div style={{width: '300px', textAlign: 'right'}}>{item.created_at}</div>
+														<div style={{ flex: 1, textAlign: 'left'}}>{item.title}</div>
+														<div style={{width: '300px', textAlign: 'left'}}>{item.created_at}</div>
 													</div>
 											</List.Item>
 										)}
@@ -286,6 +286,7 @@ export default class Handle extends React.Component {
 					visible={this.state.modalVisible}
 					onCancel={this.handleOk}
 					footer={null}
+					width={800}
 				>
 					<pre>{this.state.curItem?.title}</pre>
 					<pre>{this.state.curItem?.created_at}</pre>
