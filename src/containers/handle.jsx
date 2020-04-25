@@ -308,6 +308,9 @@ export default class Handle extends React.Component {
 					onCancel={this.handleOk}
 					footer={null}
 					width={800}
+					centered
+					wrapClassName="modal-wrapper"
+					bodyStyle={{maxHeight: '600px', overflow: 'scroll'}}
 				>
 					<pre>{this.state.curItem?.title}</pre>
 					<pre>{this.state.curItem?.created_at}</pre>

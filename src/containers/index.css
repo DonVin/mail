@@ -84,3 +84,8 @@ pre {
 	right: 30px;
 	line-height: 30px;
 }
+
+.modal-wrapper {
+	max-height: 700px;
+	margin-top: 30px;
+}
